@@ -30,6 +30,7 @@ const ItemWrapper = styled.div`
     display: flex;
     flex-direction: column;
     padding: 0 0.5rem;
+    gap: 0.5rem;
 `
 
 interface IProps {
@@ -38,16 +39,16 @@ interface IProps {
 const Sidebar: React.FC<IProps> = ({
     children
 }) => {
-  return (
-    <Wrapper>
-        <ImageWrapper>
-            <Image src={LogoImage} alt='img-logo' priority />
+    return (
+        <Wrapper>
+            <ImageWrapper>
+                <Image src={LogoImage} alt='img-logo' priority />
+            </ImageWrapper>
             <ItemWrapper>
                 {children}
             </ItemWrapper>
-        </ImageWrapper>
-    </Wrapper>
-  )
+        </Wrapper>
+    )
 }
 
 export default Sidebar
