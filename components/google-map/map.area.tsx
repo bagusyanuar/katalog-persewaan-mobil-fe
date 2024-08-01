@@ -12,7 +12,7 @@ const Container = styled.div`
     height: 500px;
     padding: 0 4rem;
     border-radius: 20px;
-    margin-bottom: 1rem;
+    margin-bottom: 5rem;
 `
 
 const SectionTitle = styled.p`

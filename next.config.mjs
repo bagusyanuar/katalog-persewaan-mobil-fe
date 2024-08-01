@@ -18,6 +18,14 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'ik.imagekit.io'
+            },
+            {
+                protocol: 'https',
+                hostname: 'www.toyota.astra.co.id'
+            },
+            {
+                protocol: "https",
+                hostname: "**",
             }
         ]
     }
