@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '@/redux/store'
 import initialState from './state'
+import eventReducers from './event'
 
 const slice = createSlice({
     name: 'login',
@@ -17,7 +18,7 @@ const slice = createSlice({
             state.LoadingLogin = action.payload
         },
     },
-    // extraReducers: eventReducers,
+    extraReducers: eventReducers,
 })
 
 export const {

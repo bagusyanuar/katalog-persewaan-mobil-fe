@@ -1,11 +1,18 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import NavbarCustomer from '@/components/navigation/navbar.customer'
 import styled from 'styled-components'
 import { ColorPallete } from '@/components/color'
 import InputTextIcon from '@/components/input/text.icon'
+import { Merchant } from '@/model/merchant'
+import LoaderDots from '@/components/loader/loader.dots'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import {
+  MemberMerchantState,
+} from '@/redux/member/merchant/slice'
+import { getMerchantProduct } from '@/redux/member/merchant/action'
 
 const MainContainer = styled.main`
   padding: 1rem 2.5rem;
@@ -193,16 +200,36 @@ const ButtonContact = styled.a`
     }
 `
 
-const MerchantProductSourcePage = () => {
+interface IProps {
+  merchant: Merchant | null
+}
+
+const MerchantProductSourcePage: React.FC<IProps> = ({ merchant }) => {
+
+  const StateMemberMerchant = useAppSelector(MemberMerchantState)
+  const dispatch = useAppDispatch()
+
+  const initialPage = useCallback(() => {
+    let id = 0;
+    if (merchant) {
+      id = merchant.ID
+    }
+    dispatch(getMerchantProduct({id: id}));
+  }, [])
+
+  useEffect(() => {
+    initialPage()
+    return () => { }
+  }, [initialPage])
   return (
     <MainContainer>
       <NavbarCustomer />
       <HeaderContainer>
-        <HeaderTitle>Merchant A</HeaderTitle>
+        <HeaderTitle>{merchant?.Name}</HeaderTitle>
         <BreadcrumbContainer>
-          <a href='#'>Beranda</a>
+          <a href='/'>Beranda</a>
           <span>/</span>
-          <a href='#' className='active'>Merchant A</a>
+          <a href='#' className='active'>{merchant?.Name}</a>
         </BreadcrumbContainer>
       </HeaderContainer>
       <MerchantContainer>
@@ -214,34 +241,44 @@ const MerchantProductSourcePage = () => {
             onChange={() => { }}
             className='mb-3'
           />
-          <ListProductWrapper>
-            <CardProduct>
-              <Image width={500} height={200} src='https://www.toyota.astra.co.id//sites/default/files/2023-09/1-avanza-purplish-silver.png' alt='product-image' priority />
-              <div className='product-info'>
-                <div className='product-desc-wrapper'>
-                  <p className='product-name'>Toyota Avanza Tahun 2020</p>
-                  <p className='product-description'>Lorem ipsum </p>
-                  <p className='product-price'>Rp250.000</p>
-                </div>
-                <div className='product-action'>
-                  <a href='#' className='product-action-detail'>
-                    <i className='bx bx-right-arrow-alt'></i>
-                  </a>
-                </div>
-              </div>
-            </CardProduct>
-          </ListProductWrapper>
+          {
+            StateMemberMerchant.LoadingMerchant ?
+              <LoaderDots height='25rem' />
+              :
+              <ListProductWrapper>
+                {
+                  StateMemberMerchant.MerchantProducts.map((product, k) => {
+                    return <CardProduct key={k}>
+                    <Image width={500} height={200} src={product.Image} alt='product-image' priority />
+                    <div className='product-info'>
+                      <div className='product-desc-wrapper'>
+                        <p className='product-name'>{product.Name}</p>
+                        <p className='product-description'>{product.Description}</p>
+                        <p className='product-price'>Rp{product.Price.toLocaleString('id-ID')}</p>
+                      </div>
+                      <div className='product-action'>
+                        <a href={`/m/${merchant?.ID}/${product.ID}`} className='product-action-detail'>
+                          <i className='bx bx-right-arrow-alt'></i>
+                        </a>
+                      </div>
+                    </div>
+                  </CardProduct>
+                  })
+                }
+                
+              </ListProductWrapper>
+          }
         </ProductWrapper>
         <InfoWrapper>
           <CardInfo>
             <p className='title'>Informasi Merchant</p>
             <hr className='divider' />
             <p className='title-section'>No. Whatsapp</p>
-            <p className='description-section mb-3'>+62821748692</p>
+            <p className='description-section mb-3'>+{merchant?.Phone}</p>
             <p className='title-section'>Alamat</p>
-            <p className='description-section mb-3'>jl. Hos Cokroaminoto no. 55</p>
+            <p className='description-section mb-3'>{merchant?.Address}</p>
             <hr className='divider' />
-            <ButtonContact href='#'>
+            <ButtonContact href={`https://api.whatsapp.com/send?phone=${merchant?.Phone}&text=Halo saya ingin menyanyakan tentang rental mobil`} target='_blank'>
               <i className='bx bxl-whatsapp'></i>
               <span>Hubungi Merchant</span>
             </ButtonContact>

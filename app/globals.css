@@ -39,3 +39,12 @@ body {
     text-wrap: balance;
   }
 }
+
+.custom-toast {
+  padding: 0 0 !important;
+  min-height: auto !important;
+}
+
+.custom-toast-body {
+  padding: 0 0 !important;
+}

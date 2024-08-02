@@ -5,6 +5,8 @@ export type TState = {
     Name: string
     Phone: string
     Address: string
+    Latitude: number
+    Longitude: number
     LoadingRegister: boolean
 }
 
@@ -15,6 +17,8 @@ const initialState: TState = {
     Name: '',
     Phone: '',
     Address: '',
+    Latitude: 0,
+    Longitude: 0,
     LoadingRegister: false
 }
 

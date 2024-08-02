@@ -14,6 +14,10 @@ import {
     SetEmail,
     SetPassword
 } from '@/redux/login/slice'
+import { submit } from '@/redux/login/action'
+import { showToast, ToastContent } from '@/components/toast'
+import { APIResponse } from '@/lib/util'
+import { ToastContainer } from 'react-toastify';
 
 const Container = styled.div`
     width: 100%;
@@ -109,6 +113,28 @@ const LoginMemberPage: React.FC = () => {
         dispatch(SetPassword(e.currentTarget.value))
     }
 
+    const onSubmit = () => {
+        dispatch(submit()).then(response => {
+            const payload: APIResponse = response.payload as APIResponse
+            switch (payload.code) {
+                case 200:
+                    showToast(<ToastContent theme='success' text={payload.message} />,
+                        {
+                            timeToClose: 2000,
+                        })
+                    break;
+                default:
+                    showToast(<ToastContent theme='error' text={payload.message} />,
+                        {
+                            timeToClose: 2000,
+                        })
+                    break;
+            }
+
+            console.log(payload);
+        })
+    }
+
     return (
         <Container>
             <CardLogin>
@@ -130,7 +156,7 @@ const LoginMemberPage: React.FC = () => {
                         placeholder='password'
                         withShowPassword
                     />
-                    <ButtonLogin>
+                    <ButtonLogin onClick={() => { onSubmit() }}>
                         Login
                     </ButtonLogin>
                     <RegisterPanel>
@@ -139,6 +165,9 @@ const LoginMemberPage: React.FC = () => {
                     </RegisterPanel>
                 </RightPanel>
             </CardLogin>
+            <ToastContainer
+                hideProgressBar
+            />
         </Container>
     )
 }

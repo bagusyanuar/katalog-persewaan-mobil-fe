@@ -1,11 +1,16 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { MapAreaModel } from '@/model/map.area.model'
 import { APIProvider, Map, AdvancedMarker, Pin, Marker, useAdvancedMarkerRef, InfoWindow } from '@vis.gl/react-google-maps'
 import { DummyMaps } from '@/dummy/data.map'
 import { ColorPallete } from '../color'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import {
+    MapAreaState,
+} from '@/redux/map-area/slice'
+import { getMapArea } from '@/redux/map-area/action'
 
 const Container = styled.div`
     width: 100%;
@@ -25,6 +30,17 @@ const SectionTitle = styled.p`
 `
 
 const MapArea = () => {
+    const StateMapArea = useAppSelector(MapAreaState)
+    const dispatch = useAppDispatch()
+
+    const initialPage = useCallback(() => {
+        dispatch(getMapArea());
+    }, [])
+
+    useEffect(() => {
+        initialPage()
+        return () => { }
+    }, [initialPage])
 
     const data: Array<MapAreaModel> = DummyMaps
     return (
@@ -40,7 +56,8 @@ const MapArea = () => {
                     disableDefaultUI={true}
                 >
                     {
-                        data.map((element, key) => {
+                        StateMapArea.DataMap.map((element, key) => {
+                            console.log(element);
                             return <MarkerWithInfoWindow
                                 key={key}
                                 data={element}
@@ -86,8 +103,9 @@ const MarkerWithInfoWindow: React.FC<InfoProps> = ({ data }) => {
 
             {infoWindowShown && (
                 <InfoWindow anchor={marker} onClose={handleClose}>
-                    <h2>InfoWindow content!</h2>
-                    <p>{data.Name}</p>
+                    <h2 style={{ marginBottom: '10px'}}>Detail Merchant</h2>
+                    <p style={{ fontWeight: 'bold', marginBottom: '10px' }}>{data.Name}</p>
+                    <a href={`/m/${data.ID}`}>detail</a>
                 </InfoWindow>
             )}
         </>

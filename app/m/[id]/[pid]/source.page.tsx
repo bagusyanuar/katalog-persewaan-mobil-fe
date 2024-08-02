@@ -6,6 +6,7 @@ import NavbarCustomer from '@/components/navigation/navbar.customer'
 import styled from 'styled-components'
 import { ColorPallete } from '@/components/color'
 import InputTextIcon from '@/components/input/text.icon'
+import { MerchantProductWithMerchant } from '@/model/merchant'
 
 const MainContainer = styled.main`
   padding: 1rem 2.5rem;
@@ -139,34 +140,40 @@ const ButtonCart = styled.a`
       font-size: 1.5em;
     }
 `
-const ProductDetailPage = () => {
+
+interface IProps {
+  dataMerchantProductWithMerchant: MerchantProductWithMerchant | null
+  isAuth: boolean
+}
+const ProductDetailPage: React.FC<IProps> = ({ dataMerchantProductWithMerchant, isAuth }) => {
   return (
     <MainContainer>
       <NavbarCustomer />
       <HeaderContainer>
-        <HeaderTitle>Toyota Avanza</HeaderTitle>
+        <HeaderTitle>{dataMerchantProductWithMerchant?.Name}</HeaderTitle>
         <BreadcrumbContainer>
           <a href='#'>Beranda</a>
           <span>/</span>
-          <a href='#'>Merchant A</a>
+          <a href='#'>{dataMerchantProductWithMerchant?.Merchant.Nama}</a>
           <span>/</span>
-          <a href='#' className='active'>Toyota Avanza</a>
+          <a href='#' className='active'>{dataMerchantProductWithMerchant?.Name}</a>
         </BreadcrumbContainer>
       </HeaderContainer>
       <Wrapper>
         <div className='image-wrapper'>
-          <Image width={500} height={200} src='https://www.toyota.astra.co.id//sites/default/files/2023-09/1-avanza-purplish-silver.png' alt='product-image' priority />
+          <Image width={500} height={200} src={dataMerchantProductWithMerchant?.Image ?? ''} alt='product-image' priority />
         </div>
         <div className='detail-wrapper'>
-          <p className='detail-title mb-0'>Toyota Avanza</p>
+          <p className='detail-title mb-0'>{dataMerchantProductWithMerchant?.Name}</p>
           <p className='extra mb-3'>Harga sewa perhari</p>
-          <p className='detail-price mb-5'>Rp250.000</p>
+          <p className='detail-price mb-5'>Rp{dataMerchantProductWithMerchant?.Price.toLocaleString('id-ID')}</p>
           <p className='section-description'>Deskripsi</p>
-          <p className='detail-description'>Toyota Avanza</p>
+          <p className='detail-description'>{dataMerchantProductWithMerchant?.Description}</p>
         </div>
         <div className='action-wrapper'>
           <CardContent>
-            <ButtonCart href='/cart'>
+            
+            <ButtonCart href={isAuth ? '/cart' : '/member'}>
               <i className='bx bx-cart'></i>
               <span>Tambah Ke Keranjang</span>
             </ButtonCart>

@@ -109,7 +109,7 @@ const RegisterMemberPage = () => {
     const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(SetEmail(e.currentTarget.value))
     }
-    
+
     const onChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(SetUsername(e.currentTarget.value))
     }
@@ -117,6 +117,20 @@ const RegisterMemberPage = () => {
     const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(SetPassword(e.currentTarget.value))
     }
+
+    const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetName(e.currentTarget.value))
+    }
+
+    const onChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetPhone(e.currentTarget.value))
+    }
+
+    const onChangeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetAddress(e.currentTarget.value))
+    }
+
+
     return (
         <Container>
             <CardRegister>
@@ -148,19 +162,19 @@ const RegisterMemberPage = () => {
                         icon='bx bx-id-card'
                         value={StateRegister.Name}
                         placeholder='nama lengkap'
-                        onChange={onChangeUsername}
+                        onChange={onChangeName}
                     />
                     <InputTextIcon
                         icon='bx bx-phone'
                         value={StateRegister.Phone}
                         placeholder='handphone'
-                        onChange={onChangeUsername}
+                        onChange={onChangePhone}
                     />
                     <InputTextIcon
                         icon='bx bx-home'
                         value={StateRegister.Address}
                         placeholder='alamat'
-                        onChange={onChangeUsername}
+                        onChange={onChangeAddress}
                     />
                     <ButtonLogin>
                         Register
