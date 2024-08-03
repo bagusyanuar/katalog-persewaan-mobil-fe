@@ -2,11 +2,23 @@
 
 import React from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import NavbarCustomer from '@/components/navigation/navbar.customer'
 import styled from 'styled-components'
 import { ColorPallete } from '@/components/color'
 import InputTextIcon from '@/components/input/text.icon'
 import { MerchantProductWithMerchant } from '@/model/merchant'
+import ButtonLoading from '@/components/button/button.loading'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import {
+  MemberCartState,
+  Reset,
+  SetLoadingAddToCart
+} from '@/redux/member/cart/slice'
+import { addToCart } from '@/redux/member/cart/action'
+import { showToast, ToastContent } from '@/components/toast'
+import { APIResponse } from '@/lib/util'
+import { ToastContainer } from 'react-toastify';
 
 const MainContainer = styled.main`
   padding: 1rem 2.5rem;
@@ -68,8 +80,8 @@ const Wrapper = styled.div`
         justify-content: center;
 
         img {
-          width: 100%;
-          height: auto;
+          width: auto;
+          height: 100%;
           object-fit: contain;
           object-position: center center;
           border-radius: 6px;
@@ -86,7 +98,7 @@ const Wrapper = styled.div`
         }
 
         .extra {
-          color: ${ColorPallete.darkTint.tint40};
+          color: ${ColorPallete.darkTint.tint10};
           font-size: 0.8em;
         }
         
@@ -122,9 +134,31 @@ const CardContent = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem 1rem;
+
+  .summary-title {
+    font-weight: bold;
+    font-size: 1em;
+    color: ${ColorPallete.dark};
+  }
+
+  hr {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .price-wrapper {
+    display: flex;
+    align-items: center;
+
+    .price {
+        font-weight: bold;
+        font-size: 1.75em;
+        color: ${ColorPallete.primary};
+    }
+  }
 `
 
-const ButtonCart = styled.a`
+const ButtonCart = styled(ButtonLoading)`
     width: 100%;
     padding: 1rem 2rem;
     display: flex;
@@ -134,6 +168,7 @@ const ButtonCart = styled.a`
     background-color: ${ColorPallete.primary};
     border-radius: 8px;
     color: white;
+    font-size: 0.8em;
 
     i {
       color: white;
@@ -146,9 +181,43 @@ interface IProps {
   isAuth: boolean
 }
 const ProductDetailPage: React.FC<IProps> = ({ dataMerchantProductWithMerchant, isAuth }) => {
+  const StateMemberCart = useAppSelector(MemberCartState)
+  const dispatch = useAppDispatch()
+  const router = useRouter()
+
+  const onAddToCart = () => {
+    let productID: number = 0;
+    if (dataMerchantProductWithMerchant !== null) {
+      productID = dataMerchantProductWithMerchant.ID
+    }
+
+    dispatch(addToCart({ id: productID })).then(response => {
+      const payload: APIResponse = response.payload as APIResponse
+      switch (payload.code) {
+        case 200:
+          showToast(<ToastContent theme='success' text={payload.message} />,
+            {
+              timeToClose: 2000,
+              onClose: () => {
+                router.replace('/')
+              }
+            })
+          break;
+        default:
+          showToast(<ToastContent theme='error' text={payload.message} />,
+            {
+              timeToClose: 2000,
+            })
+          break;
+      }
+
+      console.log(payload);
+    })
+  }
+
   return (
     <MainContainer>
-      <NavbarCustomer />
+      <NavbarCustomer isAuth={isAuth} />
       <HeaderContainer>
         <HeaderTitle>{dataMerchantProductWithMerchant?.Name}</HeaderTitle>
         <BreadcrumbContainer>
@@ -163,23 +232,34 @@ const ProductDetailPage: React.FC<IProps> = ({ dataMerchantProductWithMerchant, 
         <div className='image-wrapper'>
           <Image width={500} height={200} src={dataMerchantProductWithMerchant?.Image ?? ''} alt='product-image' priority />
         </div>
-        <div className='detail-wrapper'>
+        <div className='detail-wrapper ps-3'>
           <p className='detail-title mb-0'>{dataMerchantProductWithMerchant?.Name}</p>
-          <p className='extra mb-3'>Harga sewa perhari</p>
-          <p className='detail-price mb-5'>Rp{dataMerchantProductWithMerchant?.Price.toLocaleString('id-ID')}</p>
+          <p className='extra mb-3'>Plat Nomor Mobil : {dataMerchantProductWithMerchant?.VehicleNumber}</p>
+
           <p className='section-description'>Deskripsi</p>
           <p className='detail-description'>{dataMerchantProductWithMerchant?.Description}</p>
         </div>
         <div className='action-wrapper'>
           <CardContent>
-            
-            <ButtonCart href={isAuth ? '/cart' : '/member'}>
+            <p className='summary-title'>Ringkasan Harga</p>
+            <hr />
+            <div className='price-wrapper'>
+              <p className='price'>Rp{dataMerchantProductWithMerchant?.Price.toLocaleString('id-ID')}</p>
+            </div>
+            <hr className='mb-5' style={{ marginBottom: '1rem' }} />
+            <ButtonCart
+              onClick={onAddToCart}
+              onLoading={StateMemberCart.LoadingAddToCart}
+            >
               <i className='bx bx-cart'></i>
               <span>Tambah Ke Keranjang</span>
             </ButtonCart>
           </CardContent>
         </div>
       </Wrapper>
+      <ToastContainer
+        hideProgressBar
+      />
     </MainContainer>
   )
 }

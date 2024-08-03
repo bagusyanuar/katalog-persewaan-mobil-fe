@@ -202,9 +202,10 @@ const ButtonContact = styled.a`
 
 interface IProps {
   merchant: Merchant | null
+  isAuth: boolean
 }
 
-const MerchantProductSourcePage: React.FC<IProps> = ({ merchant }) => {
+const MerchantProductSourcePage: React.FC<IProps> = ({ merchant, isAuth }) => {
 
   const StateMemberMerchant = useAppSelector(MemberMerchantState)
   const dispatch = useAppDispatch()
@@ -214,7 +215,7 @@ const MerchantProductSourcePage: React.FC<IProps> = ({ merchant }) => {
     if (merchant) {
       id = merchant.ID
     }
-    dispatch(getMerchantProduct({id: id}));
+    dispatch(getMerchantProduct({ id: id }));
   }, [])
 
   useEffect(() => {
@@ -223,7 +224,7 @@ const MerchantProductSourcePage: React.FC<IProps> = ({ merchant }) => {
   }, [initialPage])
   return (
     <MainContainer>
-      <NavbarCustomer />
+      <NavbarCustomer isAuth={isAuth} />
       <HeaderContainer>
         <HeaderTitle>{merchant?.Name}</HeaderTitle>
         <BreadcrumbContainer>
@@ -249,23 +250,23 @@ const MerchantProductSourcePage: React.FC<IProps> = ({ merchant }) => {
                 {
                   StateMemberMerchant.MerchantProducts.map((product, k) => {
                     return <CardProduct key={k}>
-                    <Image width={500} height={200} src={product.Image} alt='product-image' priority />
-                    <div className='product-info'>
-                      <div className='product-desc-wrapper'>
-                        <p className='product-name'>{product.Name}</p>
-                        <p className='product-description'>{product.Description}</p>
-                        <p className='product-price'>Rp{product.Price.toLocaleString('id-ID')}</p>
+                      <Image width={500} height={200} src={product.Image} alt='product-image' priority />
+                      <div className='product-info'>
+                        <div className='product-desc-wrapper'>
+                          <p className='product-name'>{product.Name}</p>
+                          <p className='product-description'>{product.Description}</p>
+                          <p className='product-price'>Rp{product.Price.toLocaleString('id-ID')}</p>
+                        </div>
+                        <div className='product-action'>
+                          <a href={`/m/${merchant?.ID}/${product.ID}`} className='product-action-detail'>
+                            <i className='bx bx-right-arrow-alt'></i>
+                          </a>
+                        </div>
                       </div>
-                      <div className='product-action'>
-                        <a href={`/m/${merchant?.ID}/${product.ID}`} className='product-action-detail'>
-                          <i className='bx bx-right-arrow-alt'></i>
-                        </a>
-                      </div>
-                    </div>
-                  </CardProduct>
+                    </CardProduct>
                   })
                 }
-                
+
               </ListProductWrapper>
           }
         </ProductWrapper>

@@ -1,16 +1,18 @@
 'use client'
 
-import React from 'react'
+import React, {useEffect, useCallback} from 'react'
+import { useRouter } from 'next/navigation'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { ColorPallete } from '@/components/color'
 import LoginImage from '@/public/assets/images/login-image.jpg'
 import InputTextIcon from '@/components/input/text.icon'
 import InputPasswordIcon from '@/components/input/password.icon'
-import ButtonPrimary from '@/components/button/button.primary'
+import ButtonPrimary from '@/components/button/button.loading'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import {
     LoginState,
+    Reset,
     SetEmail,
     SetPassword
 } from '@/redux/login/slice'
@@ -104,6 +106,7 @@ const RegisterLink = styled.a`
 const LoginMemberPage: React.FC = () => {
     const StateLogin = useAppSelector(LoginState)
     const dispatch = useAppDispatch()
+    const router = useRouter()
 
     const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(SetEmail(e.currentTarget.value))
@@ -121,6 +124,9 @@ const LoginMemberPage: React.FC = () => {
                     showToast(<ToastContent theme='success' text={payload.message} />,
                         {
                             timeToClose: 2000,
+                            onClose: () => {
+                                router.replace('/')
+                            }
                         })
                     break;
                 default:
@@ -134,6 +140,15 @@ const LoginMemberPage: React.FC = () => {
             console.log(payload);
         })
     }
+
+    const initialPage = useCallback(() => {
+        dispatch(Reset());
+    }, [])
+
+    useEffect(() => {
+        initialPage()
+        return () => { }
+    }, [initialPage])
 
     return (
         <Container>
@@ -156,7 +171,10 @@ const LoginMemberPage: React.FC = () => {
                         placeholder='password'
                         withShowPassword
                     />
-                    <ButtonLogin onClick={() => { onSubmit() }}>
+                    <ButtonLogin
+                        onClick={() => { onSubmit() }}
+                        onLoading={StateLogin.LoadingLogin}
+                    >
                         Login
                     </ButtonLogin>
                     <RegisterPanel>

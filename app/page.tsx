@@ -13,12 +13,16 @@ export default async function Home() {
   const session: any = await getIronSessionData()
 
   let token: string = session['token'];
+  let isAuth: boolean = false;
+  if (token) {
+    isAuth = true;
+  }
 
   console.log(session);
 
   return (
     <>
-      <NavbarCustomer />
+      <NavbarCustomer isAuth={isAuth} />
       <GreetingHero />
       <MapArea />
       <JoinMerchant />

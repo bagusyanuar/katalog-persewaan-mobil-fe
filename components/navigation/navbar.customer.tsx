@@ -33,9 +33,11 @@ const LinkActionContainer = styled.div`
     gap: 0.5rem;
 `
 
+interface Iprops {
+    isAuth: boolean
+}
 
-const NavbarCustomer = () => {
-
+const NavbarCustomer: React.FC<Iprops> = ({ isAuth }) => {
     const router = useRouter();
 
     const handleClickProfile = () => {
@@ -51,7 +53,18 @@ const NavbarCustomer = () => {
                 <NavbarLink to='/' text='Kontak' />
             </LinkContainer>
             <LinkActionContainer>
-                <NavbarLinkAction icon='bx-user' onClick={handleClickProfile} />
+                {
+                    isAuth ?
+                        <>
+                            <NavbarLinkAction icon='bx-cart' onClick={handleClickProfile} />
+                            <NavbarLinkAction icon='bx-user' onClick={handleClickProfile} />
+                        </>
+                        :
+                        <>
+                            <NavbarLinkAction icon='bx-user' onClick={handleClickProfile} />
+                        </>
+                }
+
             </LinkActionContainer>
         </Container>
     )
