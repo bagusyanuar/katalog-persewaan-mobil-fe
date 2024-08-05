@@ -37,3 +37,30 @@ export async function POST(request: NextRequest) {
         return Response.json(response, { status: response.code })
     }
 }
+
+
+export async function GET(request: NextRequest) {
+    try {
+        const session: any = await getIronSessionData()
+        let token: string = session['token'];
+        console.log(token);
+        let serverResponse = await AxiosServerInstance.get('/customer/cart', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        let data = serverResponse.data['data'];
+        console.log();
+        
+        const response: APIResponse = {
+            code: 200,
+            message: 'successfully get cart',
+            data: data['carts']
+        }
+        return Response.json(response, { status: response.code })
+    } catch (error: any | AxiosError) {
+        console.log(error);
+        const response: APIResponse = ErrorParser(error)
+        return Response.json(response, { status: response.code })
+    }
+}

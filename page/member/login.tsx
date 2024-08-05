@@ -125,7 +125,7 @@ const LoginMemberPage: React.FC = () => {
                         {
                             timeToClose: 2000,
                             onClose: () => {
-                                router.replace('/')
+                                window.location.href = '/'
                             }
                         })
                     break;

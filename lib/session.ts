@@ -6,7 +6,7 @@ export const sessionOptions: SessionOptions = {
     password: process.env.SESSION_SECRET as string,
     cookieName: 'user',
     cookieOptions: {
-        maxAge: 60 * parseInt(process.env.SESSION_MAX_AGE as string),
+        maxAge: 60 * 1000,
         sameSite: "strict",
         path: "/"
     }

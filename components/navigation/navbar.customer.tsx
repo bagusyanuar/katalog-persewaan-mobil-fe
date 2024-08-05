@@ -41,7 +41,16 @@ const NavbarCustomer: React.FC<Iprops> = ({ isAuth }) => {
     const router = useRouter();
 
     const handleClickProfile = () => {
-        router.push('/member');
+        if (isAuth) {
+            router.push('/member/profile');
+        } else {
+            router.push('/member');
+        }
+        
+    }
+
+    const handleClickCart = () => {
+        router.push('/cart')
     }
 
     return (
@@ -56,7 +65,7 @@ const NavbarCustomer: React.FC<Iprops> = ({ isAuth }) => {
                 {
                     isAuth ?
                         <>
-                            <NavbarLinkAction icon='bx-cart' onClick={handleClickProfile} />
+                            <NavbarLinkAction icon='bx-cart' onClick={handleClickCart} />
                             <NavbarLinkAction icon='bx-user' onClick={handleClickProfile} />
                         </>
                         :
