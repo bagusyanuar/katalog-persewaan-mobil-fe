@@ -101,6 +101,17 @@ const ChipInfo = styled.div`
     padding: 5px 10px;
     border-radius: 4px;
 `
+
+const ChipSuccess = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: white;
+    background-color: ${ColorPallete.success};
+    padding: 5px 10px;
+    border-radius: 4px;
+`
 interface IProps {
     isAuth: boolean
 }
@@ -125,12 +136,29 @@ const RentSourcPage: React.FC<IProps> = ({ isAuth }) => {
         },
         {
             name: 'Total',
-            selector: row => row.Total,
+            selector: row => row.Total.toLocaleString('id-ID'),
         },
         {
             name: 'Status',
+            center: true,
             cell: row => {
-                return <ChipDanger>Menunggu Pembayaran</ChipDanger>
+                switch (row.Status) {
+                    case 0:
+                        return <ChipDanger>Menunggu Pembayaran</ChipDanger>
+                    case 1:
+                        return <ChipWarning>Menunggu konfirmasi merchant</ChipWarning>
+                    case 2:
+                        return <ChipInfo>Menunggu di ambil</ChipInfo>
+                    case 3:
+                        return <ChipInfo>Proses sewa</ChipInfo>
+                    case 4:
+                        return <ChipSuccess>Proses sewa</ChipSuccess>
+                    case 5:
+                        return <ChipDanger>Pembayaran ditolak</ChipDanger>
+                    default:
+                        break;
+                }
+
             },
         },
         {

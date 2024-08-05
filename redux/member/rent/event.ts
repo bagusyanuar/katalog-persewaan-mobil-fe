@@ -1,6 +1,6 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 import type { TState } from './state'
-import { getRentList } from './action'
+import { getRentList, payment } from './action'
 import { RentModel } from "@/model/rent";
 
 const ServerImage = 'http://katalog-persewaan-mobil.test:8080'
@@ -31,8 +31,21 @@ const onGetRentList = (builder: ActionReducerMapBuilder<TState>): ActionReducerM
     })
 }
 
+const onPayment = (builder: ActionReducerMapBuilder<TState>): ActionReducerMapBuilder<TState> => {
+    return builder.addCase(payment.pending, (state) => {
+        state.LoadingPayment = true
+    }).addCase(payment.fulfilled, (state, { payload }) => {
+        console.log(payload);
+        state.LoadingPayment = false
+    }).addCase(payment.rejected, (state, { payload }) => {
+        console.log(payload);
+        state.LoadingPayment = false
+    })
+}
+
 const extraReducers = (builder: ActionReducerMapBuilder<TState>) => {
     onGetRentList(builder);
+    onPayment(builder);
 }
 
 export default extraReducers
