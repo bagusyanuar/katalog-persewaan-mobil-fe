@@ -66,5 +66,8 @@ export default async function RentDetailPage({ params }: { params: { id: string 
     }
 
     console.log(data);
-    return <RentDetailSourcePage isAuth={isAuth} />
+    return <RentDetailSourcePage
+        isAuth={isAuth}
+        dataRentDetail={dataRentDetail}
+    />
 }
