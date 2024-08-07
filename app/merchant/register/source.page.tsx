@@ -1,23 +1,191 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { ColorPallete } from '@/components/color'
 import LoginImage from '@/public/assets/images/login-image.jpg'
 import InputTextIcon from '@/components/input/text.icon'
 import InputPasswordIcon from '@/components/input/password.icon'
-import ButtonPrimary from '@/components/button/button.primary'
+import ButtonPrimary from '@/components/button/button.loading'
+import { showToast, ToastContent } from '@/components/toast'
+import { APIResponse } from '@/lib/util'
+import { ToastContainer } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import {
-    RegisterState,
+    MerchantRegisterState,
     SetEmail,
     SetPassword,
     SetUsername,
     SetName,
     SetPhone,
-    SetAddress
-} from '@/redux/register/slice'
+    SetAddress,
+    SetLatitude,
+    SetLongitude,
+    Reset
+} from '@/redux/merchant/register/slice'
+import { submit } from '@/redux/merchant/register/action'
+import { RegisterMerchantRequest } from '@/model/auth'
+
+
+
+const RegisterMemberPage = () => {
+    const StateMerchantRegister = useAppSelector(MerchantRegisterState)
+    const dispatch = useAppDispatch()
+    const router = useRouter()
+
+    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetEmail(e.currentTarget.value))
+    }
+
+    const onChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetUsername(e.currentTarget.value))
+    }
+
+    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetPassword(e.currentTarget.value))
+    }
+    const onChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetPhone(e.currentTarget.value))
+    }
+    const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetName(e.currentTarget.value))
+    }
+
+    const onChangeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetAddress(e.currentTarget.value))
+    }
+
+    const onChangeLatitude = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetLatitude(e.currentTarget.value))
+    }
+
+    const onChangeLongitude = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetLongitude(e.currentTarget.value))
+    }
+
+    const onSubmit = () => {
+        let request: RegisterMerchantRequest = {
+            Email: StateMerchantRegister.Email,
+            Username: StateMerchantRegister.Username,
+            Password: StateMerchantRegister.Password,
+            Name: StateMerchantRegister.Name,
+            Phone: StateMerchantRegister.Phone,
+            Address: StateMerchantRegister.Address,
+            Latitude: StateMerchantRegister.Latitude,
+            Longitude: StateMerchantRegister.Longitude,
+        }
+        dispatch(submit({ req: request })).then(response => {
+            const payload: APIResponse = response.payload as APIResponse
+            switch (payload.code) {
+                case 200:
+                    showToast(<ToastContent theme='success' text={payload.message} />,
+                        {
+                            timeToClose: 2000,
+                            onClose: () => {
+                                window.location.href = '/merchant/dashboard'
+                            }
+                        })
+                    break;
+                default:
+                    showToast(<ToastContent theme='error' text={payload.message} />,
+                        {
+                            timeToClose: 2000,
+                        })
+                    break;
+            }
+
+            console.log(payload);
+        })
+    }
+
+    const initialPage = useCallback(() => {
+        dispatch(Reset());
+    }, [])
+
+    useEffect(() => {
+        initialPage()
+        return () => { }
+    }, [initialPage])
+
+    return (
+        <Container>
+            <CardRegister>
+                <LeftPanel>
+                    <Image src={LoginImage} alt='img-logo' priority />
+                </LeftPanel>
+                <RightPanel>
+                    <LoginTitle>Register new account</LoginTitle>
+                    <InputTextIcon
+                        icon='bx bx-envelope'
+                        value={StateMerchantRegister.Email}
+                        placeholder='email'
+                        onChange={onChangeEmail}
+                    />
+                    <InputPasswordIcon
+                        value={StateMerchantRegister.Password}
+                        onChange={onChangePassword}
+                        icon='bx bx-lock-alt'
+                        placeholder='password'
+                        withShowPassword
+                    />
+                    <InputTextIcon
+                        icon='bx bx-user'
+                        value={StateMerchantRegister.Username}
+                        placeholder='username'
+                        onChange={onChangeUsername}
+                    />
+                    <InputTextIcon
+                        icon='bx bx-id-card'
+                        value={StateMerchantRegister.Name}
+                        placeholder='nama lengkap'
+                        onChange={onChangeName}
+                    />
+                    <InputTextIcon
+                        icon='bx bx-phone'
+                        value={StateMerchantRegister.Phone}
+                        placeholder='handphone'
+                        onChange={onChangePhone}
+                    />
+                    <InputTextIcon
+                        icon='bx bx-home'
+                        value={StateMerchantRegister.Address}
+                        placeholder='alamat'
+                        onChange={onChangeAddress}
+                    />
+                    <InputTextIcon
+                        icon='bx bxs-map'
+                        value={StateMerchantRegister.Latitude}
+                        placeholder='latitude'
+                        onChange={onChangeLatitude}
+                    />
+                    <InputTextIcon
+                        icon='bx bx-map'
+                        value={StateMerchantRegister.Longitude}
+                        placeholder='longitude'
+                        onChange={onChangeLongitude}
+                    />
+                    <ButtonLogin
+                        onLoading={StateMerchantRegister.LoadingRegister}
+                        onClick={() => { onSubmit() }}
+                    >
+                        Register
+                    </ButtonLogin>
+                    <LoginPanel>
+                        <span className='me-1'>Sudah punya akun?</span>
+                        <LoginLink href='/merchant'>Login</LoginLink>
+                    </LoginPanel>
+                </RightPanel>
+            </CardRegister>
+            <ToastContainer
+                hideProgressBar
+            />
+        </Container>
+    )
+}
+
+export default RegisterMemberPage
 
 const Container = styled.div`
     width: 100%;
@@ -31,7 +199,7 @@ const Container = styled.div`
 const CardRegister = styled.div`
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    height: 550px;
+    height: 600px;
     width: 750px;
     border-radius: 8px;
     display: flex;
@@ -100,79 +268,3 @@ const LoginLink = styled.a`
     cursor: pointer;
     font-weight: bold;
 `
-
-const RegisterMemberPage = () => {
-
-    const StateRegister = useAppSelector(RegisterState)
-    const dispatch = useAppDispatch()
-
-    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(SetEmail(e.currentTarget.value))
-    }
-    
-    const onChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(SetUsername(e.currentTarget.value))
-    }
-
-    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(SetPassword(e.currentTarget.value))
-    }
-    return (
-        <Container>
-            <CardRegister>
-                <LeftPanel>
-                    <Image src={LoginImage} alt='img-logo' priority />
-                </LeftPanel>
-                <RightPanel>
-                    <LoginTitle>Register new account</LoginTitle>
-                    <InputTextIcon
-                        icon='bx bx-envelope'
-                        value={StateRegister.Email}
-                        placeholder='email'
-                        onChange={onChangeEmail}
-                    />
-                    <InputPasswordIcon
-                        value={StateRegister.Password}
-                        onChange={onChangePassword}
-                        icon='bx bx-lock-alt'
-                        placeholder='password'
-                        withShowPassword
-                    />
-                    <InputTextIcon
-                        icon='bx bx-user'
-                        value={StateRegister.Username}
-                        placeholder='username'
-                        onChange={onChangeUsername}
-                    />
-                    <InputTextIcon
-                        icon='bx bx-id-card'
-                        value={StateRegister.Name}
-                        placeholder='nama lengkap'
-                        onChange={onChangeUsername}
-                    />
-                    <InputTextIcon
-                        icon='bx bx-phone'
-                        value={StateRegister.Phone}
-                        placeholder='handphone'
-                        onChange={onChangeUsername}
-                    />
-                    <InputTextIcon
-                        icon='bx bx-home'
-                        value={StateRegister.Address}
-                        placeholder='alamat'
-                        onChange={onChangeUsername}
-                    />
-                    <ButtonLogin>
-                        Register
-                    </ButtonLogin>
-                    <LoginPanel>
-                        <span className='me-1'>Sudah punya akun?</span>
-                        <LoginLink href='/merchant'>Login</LoginLink>
-                    </LoginPanel>
-                </RightPanel>
-            </CardRegister>
-        </Container>
-    )
-}
-
-export default RegisterMemberPage

@@ -8,38 +8,14 @@ import { AxiosServerInstance } from '@/lib/axios'
 import { NextRequest, NextResponse } from "next/server"
 import { getIronSessionData } from '@/lib/session'
 
-export async function GET(request: NextRequest) {
-    try {
-        const session: any = await getIronSessionData()
-        let token: string = session['token'];
-        console.log(token);
-        let serverResponse = await AxiosServerInstance.get('/merchant/product', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-        let data = serverResponse.data['data'];
-        const response: APIResponse = {
-            code: 200,
-            message: 'successfully get product',
-            data: data
-        }
-        return Response.json(response, { status: response.code })
-    } catch (error: any | AxiosError) {
-        console.log(error);
-        const response: APIResponse = ErrorParser(error)
-        return Response.json(response, { status: response.code })
-    }
-}
-
-
 export async function POST(request: NextRequest) {
     try {
         const session: any = await getIronSessionData()
         let token: string = session['token'];
 
         const form = await request.formData()
-        let serverResponse = await AxiosServerInstance.post('/merchant/product', form ,{
+        let id = form.get('id');
+        let serverResponse = await AxiosServerInstance.post(`/merchant/product/${id}`, form ,{
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -47,7 +23,7 @@ export async function POST(request: NextRequest) {
         let data = serverResponse.data['data'];
         const response: APIResponse = {
             code: 200,
-            message: 'successfully creat product',
+            message: 'successfully patch product',
             data: data
         }
         return Response.json(response, { status: response.code })

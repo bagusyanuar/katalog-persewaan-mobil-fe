@@ -2,31 +2,46 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import Sidebar from '@/components/navigation/sidebar/sidebar'
 import SidebarItem from '@/components/navigation/sidebar/sidebar.item'
 import NavbarMerchant from '@/components/navigation/navbar.merchant'
+import ButtonPrimary from '@/components/button/button.primary'
 import styled from 'styled-components'
 import { ColorPallete } from '@/components/color'
 import BreadcrumbWrapper from '@/components/breadcrumb/wrapper'
 import LoaderDots from '@/components/loader/loader.dots'
 import DataTable, { TableColumn } from 'react-data-table-component'
+import ModalConfirmation from '@/components/modal/modal.confirmation'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import {
     MerchantProductState,
     SetLoadingProduct,
+    SetID
 } from '@/redux/merchant/product/slice'
-// import { submit } from '@/redux/logout/action'
+import { getProductList, deleteProduct } from '@/redux/merchant/product/action'
 import { Product } from '@/model/product'
+import { showToast, ToastContent } from '@/components/toast'
+import { APIResponse } from '@/lib/util'
+import { ToastContainer } from 'react-toastify';
 
 const ProductSourcePage: React.FC = () => {
     const StateMerchantProduct = useAppSelector(MerchantProductState)
     const dispatch = useAppDispatch()
     const router = useRouter()
+    const [modal, setModal] = useState<boolean>(false)
 
     const columns: TableColumn<Product>[] = [
         {
             name: 'Gambar',
-            selector: row => row.Image,
+            cell: row => {
+                return <div className='py-2'>
+                    <ImageWrapper>
+                        <Image src={row.Image} alt='product-image' priority height={76} width={76} />
+                    </ImageWrapper>
+                </div >
+            },
+            width: '10rem'
         },
         {
             name: 'Nama',
@@ -42,7 +57,6 @@ const ProductSourcePage: React.FC = () => {
         },
         {
             name: 'Deskripsi',
-            center: true,
             selector: row => row.Description,
         },
         {
@@ -51,8 +65,13 @@ const ProductSourcePage: React.FC = () => {
                 return <div className='flex items-center'>
                     <a href='#' onClick={(e) => {
                         e.preventDefault();
-                        router.push(`/rent/${row.ID}`)
-                    }} className='mr-3 flex items-center'><span className='bx bx-dots-vertical-rounded text-slate-600 !text-sm'></span></a>
+                        setModal(true);
+                        dispatch(SetID(row.ID))
+                    }} className='mr-1 flex items-center justify-center w-8 h-8 rounded-md bg-red-500'><span className='bx bx-trash !text-white !text-sm'></span></a>
+                    <a href='#' onClick={(e) => {
+                        e.preventDefault();
+                        router.push(`/merchant/product/${row.ID}`)
+                    }} className='flex items-center justify-center w-8 h-8 rounded-md bg-orange-400'><span className='bx bx-edit-alt !text-slate-900 !text-sm'></span></a>
                 </div>
             },
             width: '5rem',
@@ -60,10 +79,36 @@ const ProductSourcePage: React.FC = () => {
         },
     ]
 
+    const onSubmit = () => {
+        dispatch(deleteProduct({ id: StateMerchantProduct.ID.toString() })).then(response => {
+            const payload: APIResponse = response.payload as APIResponse
+            switch (payload.code) {
+                case 200:
+                    showToast(<ToastContent theme='success' text={payload.message} />,
+                        {
+                            timeToClose: 1000,
+                            onClose: () => {
+                                setModal(false)
+                                dispatch(getProductList())
+                            }
+                        })
+                    break;
+                default:
+                    showToast(<ToastContent theme='error' text={payload.message} />,
+                        {
+                            timeToClose: 1000,
+                        })
+                    break;
+            }
+
+            console.log(payload);
+        })
+
+    }
+
     const initialPage = useCallback(async () => {
-        // dispatch(getProfile());
         dispatch(SetLoadingProduct(true))
-        await new Promise((resolve) => setTimeout(resolve, 500))
+        dispatch(getProductList());
         dispatch(SetLoadingProduct(false))
     }, [])
 
@@ -110,29 +155,87 @@ const ProductSourcePage: React.FC = () => {
                             <a href='#' className='active'>Product</a>
                         </BreadcrumbWrapper>
                     </HeaderContainer>
-                    <hr className='my-3' />
-                    <DataTable
-                        columns={columns}
-                        data={[]}
-                        pagination
-                        progressPending={StateMerchantProduct.LoadingProduct}
-                        progressComponent={<LoaderDots className='h-80' />}
-                    />
+
+                    <CardContent>
+                        <div className='flex justify-between items-center w-full'>
+                            <DataTitle>Data Product</DataTitle>
+                            <ButtonPrimary onClick={() => {
+                                router.push('/merchant/product/add')
+                            }}>
+                                Tambah Product
+                            </ButtonPrimary>
+                        </div>
+                        <hr className='my-5' />
+                        <DataTable
+                            columns={columns}
+                            data={StateMerchantProduct.Products}
+                            pagination
+                            progressPending={StateMerchantProduct.LoadingProduct}
+                            progressComponent={<LoaderDots className='h-80' />}
+                            persistTableHead={true}
+                        />
+                    </CardContent>
                 </ContentContainer>
             </ContentWrapper>
+            <ModalConfirmation
+                open={modal}
+                onAccept={() => { onSubmit() }}
+                onDenied={() => {
+                    setModal(false)
+                }}
+                text='Are you sure to delete product?'
+            />
+            <ToastContainer
+                hideProgressBar
+            />
         </Wrapper>
     )
 }
 
 export default ProductSourcePage
 
+const ImageWrapper = styled.div`
+    height: 80px;
+    width: 80px;
+    border-radius: 8px;
+    border: 1px solid ${ColorPallete.darkTint.tint30};
+    padding: 2px 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      height: 74px;
+      width: 76px;
+      object-fit: cover;
+      object-position: center center;
+      border-radius: 4px;
+    }
+
+`
+
+const DataTitle = styled.p`
+    margin-bottom: 0;
+    color: ${ColorPallete.dark};
+    font-weight: bold;
+    font-size: 1em;
+`
+
+const CardContent = styled.div`
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    height: fit-content;
+    width: 100%;
+    border-radius: 8px;
+    padding: 1rem 1rem;
+`
 const HeaderContainer = styled.div`
     margin-top: 1rem;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    margin-bottom: 3rem;
 `
 
 const HeaderTitle = styled.p`
@@ -148,6 +251,8 @@ const Wrapper = styled.div`
 `
 
 const ContentWrapper = styled.div`
+    padding-left: 260px;
+    height: 100vh;
     width: 100%;
 `
 

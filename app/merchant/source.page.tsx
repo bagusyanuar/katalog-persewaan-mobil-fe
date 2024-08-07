@@ -1,19 +1,24 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { ColorPallete } from '@/components/color'
 import LoginImage from '@/public/assets/images/login-image.jpg'
 import InputTextIcon from '@/components/input/text.icon'
 import InputPasswordIcon from '@/components/input/password.icon'
-import ButtonPrimary from '@/components/button/button.primary'
+import ButtonPrimary from '@/components/button/button.loading'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import {
-    LoginState,
+    MerchantLoginState,
+    Reset,
     SetEmail,
     SetPassword
-} from '@/redux/login/slice'
+} from '@/redux/merchant/login/slice'
+import { submit } from '@/redux/merchant/login/action'
+import { showToast, ToastContent } from '@/components/toast'
+import { APIResponse } from '@/lib/util'
+import { ToastContainer } from 'react-toastify';
 
 const Container = styled.div`
     width: 100%;
@@ -98,7 +103,7 @@ const RegisterLink = styled.a`
 `
 
 const MerchantLoginPage: React.FC = () => {
-    const StateLogin = useAppSelector(LoginState)
+    const StateMerchantLogin = useAppSelector(MerchantLoginState)
     const dispatch = useAppDispatch()
 
     const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,6 +114,39 @@ const MerchantLoginPage: React.FC = () => {
         dispatch(SetPassword(e.currentTarget.value))
     }
 
+    const onSubmit = () => {
+        dispatch(submit()).then(response => {
+            const payload: APIResponse = response.payload as APIResponse
+            switch (payload.code) {
+                case 200:
+                    showToast(<ToastContent theme='success' text={payload.message} />,
+                        {
+                            timeToClose: 2000,
+                            onClose: () => {
+                                window.location.href = '/merchant/dashboard'
+                            }
+                        })
+                    break;
+                default:
+                    showToast(<ToastContent theme='error' text={payload.message} />,
+                        {
+                            timeToClose: 2000,
+                        })
+                    break;
+            }
+
+            console.log(payload);
+        })
+    }
+
+    const initialPage = useCallback(() => {
+        dispatch(Reset());
+    }, [])
+
+    useEffect(() => {
+        initialPage()
+        return () => { }
+    }, [initialPage])
     return (
         <Container>
             <CardLogin>
@@ -119,18 +157,21 @@ const MerchantLoginPage: React.FC = () => {
                     <LoginTitle>Sign in to your account</LoginTitle>
                     <InputTextIcon
                         icon='bx bx-envelope'
-                        value={StateLogin.Email}
+                        value={StateMerchantLogin.Email}
                         placeholder='email'
                         onChange={onChangeEmail}
                     />
                     <InputPasswordIcon
-                        value={StateLogin.Password}
+                        value={StateMerchantLogin.Password}
                         onChange={onChangePassword}
                         icon='bx bx-lock-alt'
                         placeholder='password'
                         withShowPassword
                     />
-                    <ButtonLogin>
+                    <ButtonLogin
+                        onClick={() => { onSubmit() }}
+                        onLoading={StateMerchantLogin.LoadingLogin}
+                    >
                         Login
                     </ButtonLogin>
                     <RegisterPanel>
@@ -139,6 +180,9 @@ const MerchantLoginPage: React.FC = () => {
                     </RegisterPanel>
                 </RightPanel>
             </CardLogin>
+            <ToastContainer
+                hideProgressBar
+            />
         </Container>
     )
 }

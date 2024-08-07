@@ -6,8 +6,11 @@ import Image from 'next/image'
 import LogoImage from '@/public/assets/images/logo.png'
 
 const Wrapper = styled.div`
-    width: 260px;
     height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
     border-right: 1px solid gray;
     display: flex;
     flex-direction: column;

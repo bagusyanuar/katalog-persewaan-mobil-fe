@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '@/redux/store'
 import initialState from './state'
+import eventReducers from './event'
 
 const slice = createSlice({
-    name: 'register',
+    name: 'merchatRegister',
     initialState,
     reducers: {
         Reset: () => initialState,
@@ -35,7 +36,7 @@ const slice = createSlice({
             state.LoadingRegister = action.payload
         },
     },
-    // extraReducers: eventReducers,
+    extraReducers: eventReducers,
 })
 
 export const {
@@ -51,5 +52,5 @@ export const {
     SetLoadingRegister
 } = slice.actions
 
-export const RegisterState = (state: RootState) => state.register
+export const MerchantRegisterState = (state: RootState) => state.merchantRegister
 export default slice.reducer

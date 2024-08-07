@@ -11,6 +11,9 @@ const slice = createSlice({
         SetLoadingProduct: (state, action: PayloadAction<boolean>) => {
             state.LoadingProduct = action.payload
         },
+        SetID: (state, action: PayloadAction<number>) => {
+            state.ID = action.payload
+        },
         SetVehicleNumber: (state, action: PayloadAction<string>) => {
             state.VehicleNumber = action.payload
         },
@@ -33,7 +36,8 @@ export const {
     SetVehicleNumber,
     SetPrice,
     SetDescription,
-    SetLoadingProduct
+    SetLoadingProduct,
+    SetID
 } = slice.actions
 
 export const MerchantProductState = (state: RootState) => state.merchantProduct
