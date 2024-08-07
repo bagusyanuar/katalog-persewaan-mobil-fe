@@ -107,9 +107,7 @@ const ProductSourcePage: React.FC = () => {
     }
 
     const initialPage = useCallback(async () => {
-        dispatch(SetLoadingOrder(true))
-        dispatch(getOrderList({status: statusOrder}));
-        dispatch(SetLoadingOrder(false))
+        dispatch(getOrderList({ status: statusOrder }));
     }, [])
 
     useEffect(() => {
@@ -155,8 +153,45 @@ const ProductSourcePage: React.FC = () => {
                             <a href='#' className='active'>Order</a>
                         </BreadcrumbWrapper>
                     </HeaderContainer>
-
+                    <div className='flex gap-3 items-center mb-5'>
+                        <TabStatus
+                            className={statusOrder === '1' ? 'active' : ''}
+                            onClick={() => {
+                                setStatusOrder('1')
+                                dispatch(getOrderList({ status: '1' }));
+                            }}
+                        >
+                            Order Baru
+                        </TabStatus>
+                        <TabStatus
+                            className={statusOrder === '2' ? 'active' : ''}
+                            onClick={() => {
+                                setStatusOrder('2')
+                                dispatch(getOrderList({ status: '2' }));
+                            }}>
+                            Menunggu Datang
+                        </TabStatus>
+                        <TabStatus
+                            className={statusOrder === '3' ? 'active' : ''}
+                            onClick={() => { 
+                                setStatusOrder('3') 
+                                dispatch(getOrderList({ status: '3' }));
+                            }}
+                        >
+                            Di Sewa
+                        </TabStatus>
+                        <TabStatus
+                            className={statusOrder === '4' ? 'active' : ''}
+                            onClick={() => { 
+                                setStatusOrder('4') 
+                                dispatch(getOrderList({ status: '4' }));
+                            }}
+                        >
+                            Selesai
+                        </TabStatus>
+                    </div>
                     <CardContent>
+
                         <div className='flex justify-between items-center w-full'>
                             <DataTitle>Data Order</DataTitle>
                         </div>
@@ -188,6 +223,22 @@ const ProductSourcePage: React.FC = () => {
 }
 
 export default ProductSourcePage
+
+const TabStatus = styled.div`
+    font-size: 0.8em;
+    background-color: white;
+    border: 1px solid ${ColorPallete.primary};
+    color: ${ColorPallete.primary};
+    border-radius: 12px;
+    padding: 0.5rem 2rem;
+    cursor: pointer;
+
+    &.active {
+        background-color: ${ColorPallete.primary};
+        border-color: ${ColorPallete.primary};
+        color: white;
+    }
+`
 
 const ImageWrapper = styled.div`
     height: 80px;

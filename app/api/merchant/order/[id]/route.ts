@@ -7,14 +7,15 @@ import { cookies } from 'next/headers'
 import { AxiosServerInstance } from '@/lib/axios'
 import { NextRequest, NextResponse } from "next/server"
 import { getIronSessionData } from '@/lib/session'
-import { useSearchParams } from 'next/navigation'
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
         const session: any = await getIronSessionData()
         let token: string = session['token'];
-        let status = request.nextUrl.searchParams.get('status')
-        let serverResponse = await AxiosServerInstance.get(`/merchant/order?status=${status}`, {
+
+        const form = await request.formData()
+        let id = form.get('id');
+        let serverResponse = await AxiosServerInstance.post(`/merchant/order/${id}`, form ,{
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
         let data = serverResponse.data['data'];
         const response: APIResponse = {
             code: 200,
-            message: 'successfully get order',
+            message: 'successfully patch driver',
             data: data
         }
         return Response.json(response, { status: response.code })
