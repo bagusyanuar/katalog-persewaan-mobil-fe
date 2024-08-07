@@ -1,6 +1,6 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 import type { TState } from './state'
-import { getOrderList} from './action'
+import { getOrderList, confirmOrder } from './action'
 import { MerchantProduct } from "@/model/merchant";
 import { Order } from "@/model/order";
 
@@ -33,6 +33,17 @@ const onGetOrder = (builder: ActionReducerMapBuilder<TState>): ActionReducerMapB
         console.log(payload);
         state.LoadingOrder = false
         state.Orders = []
+    })
+}
+
+
+const onConfirmOrder = (builder: ActionReducerMapBuilder<TState>): ActionReducerMapBuilder<TState> => {
+    return builder.addCase(confirmOrder.pending, (state) => {
+        state.LoadingConfirmOrder = true
+    }).addCase(confirmOrder.fulfilled, (state, { payload }) => {
+        state.LoadingConfirmOrder = false
+    }).addCase(confirmOrder.rejected, (state, { payload }) => {
+        state.LoadingConfirmOrder = false
     })
 }
 
@@ -69,6 +80,7 @@ const onGetOrder = (builder: ActionReducerMapBuilder<TState>): ActionReducerMapB
 
 const extraReducers = (builder: ActionReducerMapBuilder<TState>) => {
     onGetOrder(builder);
+    onConfirmOrder(builder);
     // onCreateProduct(builder);
     // onPatchProduct(builder);
     // onDeleteProduct(builder);

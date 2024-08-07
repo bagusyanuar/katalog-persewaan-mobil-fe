@@ -207,14 +207,14 @@ const ProductSourcePage: React.FC = () => {
                     </CardContent>
                 </ContentContainer>
             </ContentWrapper>
-            <ModalConfirmation
+            {/* <ModalConfirmation
                 open={modal}
                 onAccept={() => { onSubmit() }}
                 onDenied={() => {
                     setModal(false)
                 }}
                 text='Are you sure to delete product?'
-            />
+            /> */}
             <ToastContainer
                 hideProgressBar
             />

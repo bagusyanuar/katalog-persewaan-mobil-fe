@@ -44,3 +44,8 @@ export type OrderDriver = {
     Name: string
     Image: string
 }
+
+export type ConfirmRequest = {
+    Status: string
+    Reason: string
+}

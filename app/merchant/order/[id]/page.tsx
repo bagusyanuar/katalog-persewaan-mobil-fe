@@ -55,8 +55,8 @@ export default async function OrderDetailPage({ params }: { params: { id: string
     let dataDetail: OrderDetail = {
         ID: data['id'],
         Customer: {
-            CustomerName: data['user']['name'],
-            CustomerPhone: data['user']['phone']
+            CustomerName: data['user']['customer']['name'],
+            CustomerPhone: data['user']['customer']['phone']
         },
         DateRent: data['date_rent'],
         DateReturn: data['date_return'],

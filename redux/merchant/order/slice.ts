@@ -14,6 +14,9 @@ const slice = createSlice({
         SetID: (state, action: PayloadAction<number>) => {
             state.ID = action.payload
         },
+        SetConfirmReason: (state, action: PayloadAction<string>) => {
+            state.ConfirmReason = action.payload
+        },
     },
     extraReducers: eventReducers,
 })
@@ -21,6 +24,7 @@ const slice = createSlice({
 export const {
     Reset,
     SetLoadingOrder,
+    SetConfirmReason,
     SetID
 } = slice.actions
 
