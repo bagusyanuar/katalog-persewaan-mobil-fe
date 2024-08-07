@@ -4,12 +4,24 @@ import initialState from './state'
 import eventReducers from './event'
 
 const slice = createSlice({
-    name: 'merchantProduct',
+    name: 'merchantDriver',
     initialState,
     reducers: {
         Reset: () => initialState,
-        SetLoadingProduct: (state, action: PayloadAction<boolean>) => {
-            state.LoadingProduct = action.payload
+        SetID: (state, action: PayloadAction<number>) => {
+            state.ID = action.payload
+        },
+        SetName: (state, action: PayloadAction<string>) => {
+            state.Name = action.payload
+        },
+        SetPrice: (state, action: PayloadAction<number>) => {
+            state.Price = action.payload
+        },
+        SetPhone: (state, action: PayloadAction<string>) => {
+            state.Phone = action.payload
+        },
+        SetLoadingDriver: (state, action: PayloadAction<boolean>) => {
+            state.LoadingDriver = action.payload
         },
     },
     extraReducers: eventReducers,
@@ -17,8 +29,12 @@ const slice = createSlice({
 
 export const {
     Reset,
-    SetLoadingProduct
+    SetID,
+    SetName,
+    SetPhone,
+    SetPrice,
+    SetLoadingDriver
 } = slice.actions
 
-export const MerchantProductState = (state: RootState) => state.memberMerchant
+export const MerchantDriverState = (state: RootState) => state.merchantDriver
 export default slice.reducer

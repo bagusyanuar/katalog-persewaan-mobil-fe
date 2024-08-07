@@ -8,12 +8,12 @@ import { AxiosServerInstance } from '@/lib/axios'
 import { NextRequest, NextResponse } from "next/server"
 import { getIronSessionData } from '@/lib/session'
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         const session: any = await getIronSessionData()
         let token: string = session['token'];
-        console.log(token);
-        let serverResponse = await AxiosServerInstance.get('/merchant/driver', {
+
+        let serverResponse = await AxiosServerInstance.delete(`/merchant/driver/${params.id}/delete`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -21,33 +21,7 @@ export async function GET(request: NextRequest) {
         let data = serverResponse.data['data'];
         const response: APIResponse = {
             code: 200,
-            message: 'successfully get driver',
-            data: data
-        }
-        return Response.json(response, { status: response.code })
-    } catch (error: any | AxiosError) {
-        console.log(error);
-        const response: APIResponse = ErrorParser(error)
-        return Response.json(response, { status: response.code })
-    }
-}
-
-
-export async function POST(request: NextRequest) {
-    try {
-        const session: any = await getIronSessionData()
-        let token: string = session['token'];
-
-        const form = await request.formData()
-        let serverResponse = await AxiosServerInstance.post('/merchant/driver', form ,{
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-        let data = serverResponse.data['data'];
-        const response: APIResponse = {
-            code: 200,
-            message: 'successfully create driver',
+            message: 'successfully delete driver',
             data: data
         }
         return Response.json(response, { status: response.code })

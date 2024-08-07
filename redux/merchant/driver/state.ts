@@ -1,29 +1,27 @@
-import { Product } from "@/model/product"
+import { MerchantDriver } from "@/model/driver"
 
 export type TState = {
     ID: number
-    VehicleNumber: string
     Name: string
-    Price: string
+    Price: number
     Image: string
-    Description: string
-    Product: Product | null
-    Products: Array<Product>
-    LoadingProduct: boolean
-    LoadingSaveProduct: boolean
+    Phone: string
+    Driver: MerchantDriver | null
+    Drivers: Array<MerchantDriver>
+    LoadingDriver: boolean
+    LoadingSaveDriver: boolean
 }
 
 const initialState: TState = {
     ID: 0,
-    VehicleNumber: '',
     Name: '',
-    Price: '',
+    Price: 0,
     Image: '',
-    Description: '',
-    Product: null,
-    Products: [],
-    LoadingProduct: true,
-    LoadingSaveProduct: false
+    Phone: '',
+    Driver: null,
+    Drivers: [],
+    LoadingDriver: true,
+    LoadingSaveDriver: false
 }
 
 export default initialState

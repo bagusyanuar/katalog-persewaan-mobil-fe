@@ -10,6 +10,8 @@ import memberProfile from './member/profile/slice'
 import merchantLogin from './merchant/login/slice'
 import merchantRegister from './merchant/register/slice'
 import merchantProduct from './merchant/product/slice'
+import merchantDriver from './merchant/driver/slice'
+import merchantOrder from './merchant/order/slice'
 // import category from './category/slice'
 // import motorbikeCategory from './motorbike-category/slice'
 
@@ -25,6 +27,8 @@ const rootReducer = combineReducers({
     merchantLogin,
     merchantRegister,
     merchantProduct,
+    merchantDriver,
+    merchantOrder,
     // category,
     // motorbikeCategory,
 })
