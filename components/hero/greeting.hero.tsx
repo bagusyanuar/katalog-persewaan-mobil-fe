@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 import styled from 'styled-components'
 import Image from 'next/image'
 import HeroImage from '@/public/assets/images/hero.png'
@@ -67,6 +68,8 @@ const ButtonJoin = styled.button`
 `
 
 const GreetingHero = () => {
+    const router = useRouter();
+
     return (
         <Container>
             <LeftContainer>
@@ -76,7 +79,9 @@ const GreetingHero = () => {
                 <GreetingTextDescription>
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry`s standard dummy text ever since the 1500s
                 </GreetingTextDescription>
-                <ButtonJoin>
+                <ButtonJoin onClick={() => {
+                    router.push('/member/auth/register')
+                 }}>
                     Join Now
                 </ButtonJoin>
             </LeftContainer>

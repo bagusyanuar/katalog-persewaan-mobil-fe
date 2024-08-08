@@ -1,13 +1,12 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { ColorPallete } from '@/components/color'
 import LoginImage from '@/public/assets/images/login-image.jpg'
 import InputTextIcon from '@/components/input/text.icon'
 import InputPasswordIcon from '@/components/input/password.icon'
-import ButtonPrimary from '@/components/button/button.primary'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import {
     RegisterState,
@@ -16,8 +15,157 @@ import {
     SetUsername,
     SetName,
     SetPhone,
-    SetAddress
+    SetAddress,
+    Reset
 } from '@/redux/register/slice'
+import { submit } from '@/redux/register/action'
+import { RegisterMerchantRequest } from '@/model/auth'
+import ButtonPrimary from '@/components/button/button.loading'
+import { showToast, ToastContent } from '@/components/toast'
+import { APIResponse } from '@/lib/util'
+import { ToastContainer } from 'react-toastify';
+
+
+
+const RegisterMemberPage = () => {
+
+    const StateRegister = useAppSelector(RegisterState)
+    const dispatch = useAppDispatch()
+
+    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetEmail(e.currentTarget.value))
+    }
+
+    const onChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetUsername(e.currentTarget.value))
+    }
+
+    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetPassword(e.currentTarget.value))
+    }
+
+    const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetName(e.currentTarget.value))
+    }
+
+    const onChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetPhone(e.currentTarget.value))
+    }
+
+    const onChangeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(SetAddress(e.currentTarget.value))
+    }
+
+
+    const onSubmit = () => {
+        let request: RegisterMerchantRequest = {
+            Email: StateRegister.Email,
+            Username: StateRegister.Username,
+            Password: StateRegister.Password,
+            Name: StateRegister.Name,
+            Phone: StateRegister.Phone,
+            Address: StateRegister.Address,
+            Latitude: '',
+            Longitude: '',
+        }
+        dispatch(submit({ req: request })).then(response => {
+            const payload: APIResponse = response.payload as APIResponse
+            switch (payload.code) {
+                case 200:
+                    showToast(<ToastContent theme='success' text={payload.message} />,
+                        {
+                            timeToClose: 2000,
+                            onClose: () => {
+                                window.location.href = '/'
+                            }
+                        })
+                    break;
+                default:
+                    showToast(<ToastContent theme='error' text={payload.message} />,
+                        {
+                            timeToClose: 2000,
+                        })
+                    break;
+            }
+
+            console.log(payload);
+        })
+    }
+
+    const initialPage = useCallback(() => {
+        dispatch(Reset());
+    }, [])
+
+    useEffect(() => {
+        initialPage()
+        return () => { }
+    }, [initialPage])
+
+    return (
+        <Container>
+            <CardRegister>
+                <LeftPanel>
+                    <Image src={LoginImage} alt='img-logo' priority />
+                </LeftPanel>
+                <RightPanel>
+                    <LoginTitle>Register new account</LoginTitle>
+                    <InputTextIcon
+                        icon='bx bx-envelope'
+                        value={StateRegister.Email}
+                        placeholder='email'
+                        onChange={onChangeEmail}
+                    />
+                    <InputPasswordIcon
+                        value={StateRegister.Password}
+                        onChange={onChangePassword}
+                        icon='bx bx-lock-alt'
+                        placeholder='password'
+                        withShowPassword
+                    />
+                    <InputTextIcon
+                        icon='bx bx-user'
+                        value={StateRegister.Username}
+                        placeholder='username'
+                        onChange={onChangeUsername}
+                    />
+                    <InputTextIcon
+                        icon='bx bx-id-card'
+                        value={StateRegister.Name}
+                        placeholder='nama lengkap'
+                        onChange={onChangeName}
+                    />
+                    <InputTextIcon
+                        icon='bx bx-phone'
+                        value={StateRegister.Phone}
+                        placeholder='handphone'
+                        onChange={onChangePhone}
+                    />
+                    <InputTextIcon
+                        icon='bx bx-home'
+                        value={StateRegister.Address}
+                        placeholder='alamat'
+                        onChange={onChangeAddress}
+                    />
+                    <ButtonLogin
+                        onLoading={StateRegister.LoadingRegister}
+                        onClick={() => { onSubmit() }}
+                    >
+                        Register
+                    </ButtonLogin>
+                    <LoginPanel>
+                        <span className='me-1'>Sudah punya akun?</span>
+                        <LoginLink href='/member/auth'>Login</LoginLink>
+                    </LoginPanel>
+                </RightPanel>
+            </CardRegister>
+            <ToastContainer
+                hideProgressBar
+            />
+        </Container>
+    )
+}
+
+export default RegisterMemberPage
 
 const Container = styled.div`
     width: 100%;
@@ -100,93 +248,3 @@ const LoginLink = styled.a`
     cursor: pointer;
     font-weight: bold;
 `
-
-const RegisterMemberPage = () => {
-
-    const StateRegister = useAppSelector(RegisterState)
-    const dispatch = useAppDispatch()
-
-    const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(SetEmail(e.currentTarget.value))
-    }
-
-    const onChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(SetUsername(e.currentTarget.value))
-    }
-
-    const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(SetPassword(e.currentTarget.value))
-    }
-
-    const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(SetName(e.currentTarget.value))
-    }
-
-    const onChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(SetPhone(e.currentTarget.value))
-    }
-
-    const onChangeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(SetAddress(e.currentTarget.value))
-    }
-
-
-    return (
-        <Container>
-            <CardRegister>
-                <LeftPanel>
-                    <Image src={LoginImage} alt='img-logo' priority />
-                </LeftPanel>
-                <RightPanel>
-                    <LoginTitle>Register new account</LoginTitle>
-                    <InputTextIcon
-                        icon='bx bx-envelope'
-                        value={StateRegister.Email}
-                        placeholder='email'
-                        onChange={onChangeEmail}
-                    />
-                    <InputPasswordIcon
-                        value={StateRegister.Password}
-                        onChange={onChangePassword}
-                        icon='bx bx-lock-alt'
-                        placeholder='password'
-                        withShowPassword
-                    />
-                    <InputTextIcon
-                        icon='bx bx-user'
-                        value={StateRegister.Username}
-                        placeholder='username'
-                        onChange={onChangeUsername}
-                    />
-                    <InputTextIcon
-                        icon='bx bx-id-card'
-                        value={StateRegister.Name}
-                        placeholder='nama lengkap'
-                        onChange={onChangeName}
-                    />
-                    <InputTextIcon
-                        icon='bx bx-phone'
-                        value={StateRegister.Phone}
-                        placeholder='handphone'
-                        onChange={onChangePhone}
-                    />
-                    <InputTextIcon
-                        icon='bx bx-home'
-                        value={StateRegister.Address}
-                        placeholder='alamat'
-                        onChange={onChangeAddress}
-                    />
-                    <ButtonLogin>
-                        Register
-                    </ButtonLogin>
-                    <LoginPanel>
-                        <span className='me-1'>Sudah punya akun?</span>
-                        <LoginLink href='/member/auth'>Login</LoginLink>
-                    </LoginPanel>
-                </RightPanel>
-            </CardRegister>
-        </Container>
-    )
-}
-
-export default RegisterMemberPage
