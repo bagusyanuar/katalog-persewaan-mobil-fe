@@ -185,6 +185,12 @@ const OrderDetailSourcePage: React.FC<IProps> = ({ data }) => {
           icon='bx bx-shopping-bag'
           active={true}
         />
+        <SidebarItem
+                    to='/merchant/profile'
+                    text='Profile'
+                    icon='bx bx-id-card'
+                    active={false}
+                />
       </Sidebar>
       <ContentWrapper className='pb-5'>
         <NavbarMerchant />

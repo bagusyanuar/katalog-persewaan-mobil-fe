@@ -43,6 +43,12 @@ const MerchantDashboarSourcePage: React.FC = () => {
           icon='bx bx-shopping-bag'
           active={pathName.startsWith('/merchant/order')}
         />
+        <SidebarItem
+          to='/merchant/profile'
+          text='Profile'
+          icon='bx bx-id-card'
+          active={pathName.startsWith('/merchant/profile')}
+        />
       </Sidebar>
       <ContentWrapper>
         <NavbarMerchant />

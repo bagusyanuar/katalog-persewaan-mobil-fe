@@ -121,6 +121,12 @@ const AddProductSourcePage: React.FC = () => {
                     icon='bx bx-shopping-bag'
                     active={false}
                 />
+                <SidebarItem
+                    to='/merchant/profile'
+                    text='Profile'
+                    icon='bx bx-id-card'
+                    active={false}
+                />
             </Sidebar>
             <ContentWrapper>
                 <NavbarMerchant />

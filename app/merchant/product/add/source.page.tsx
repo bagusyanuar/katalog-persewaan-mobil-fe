@@ -59,7 +59,7 @@ const AddProductSourcePage: React.FC = () => {
                 Image: thumbnail
             }
 
-            dispatch(createProduct({req: productRequest})).then(response => {
+            dispatch(createProduct({ req: productRequest })).then(response => {
                 const payload: APIResponse = response.payload as APIResponse
                 switch (payload.code) {
                     case 200:
@@ -78,16 +78,16 @@ const AddProductSourcePage: React.FC = () => {
                             })
                         break;
                 }
-    
+
                 console.log(payload);
             })
         } else {
             showToast(<ToastContent theme='error' text={`Please Attach Image`} />,
-            {
-                timeToClose: 1000,
-            })
+                {
+                    timeToClose: 1000,
+                })
         }
-        
+
     }
 
     const initialPage = useCallback(() => {
@@ -123,6 +123,12 @@ const AddProductSourcePage: React.FC = () => {
                     to='/merchant/order'
                     text='Order'
                     icon='bx bx-shopping-bag'
+                    active={false}
+                />
+                <SidebarItem
+                    to='/merchant/profile'
+                    text='Profile'
+                    icon='bx bx-id-card'
                     active={false}
                 />
             </Sidebar>
@@ -174,7 +180,7 @@ const AddProductSourcePage: React.FC = () => {
                                     } else {
                                         dispatch(SetPrice(parseInt(e.currentTarget.value)))
                                     }
-                                    
+
                                 }}
                                 placeholder='0'
                             />
@@ -203,7 +209,7 @@ const AddProductSourcePage: React.FC = () => {
                             <ButtonSave
                                 onClick={() => {
                                     onSubmit()
-                                 }}
+                                }}
                                 onLoading={StateMerchantProduct.LoadingSaveProduct}
                             >
                                 <i className='bx bx-save me-3'></i>
