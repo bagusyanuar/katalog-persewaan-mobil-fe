@@ -58,8 +58,8 @@ const NavbarCustomer: React.FC<Iprops> = ({ isAuth }) => {
             <Image src={MainLogo} alt='img-logo' priority />
             <LinkContainer>
                 <NavbarLink to='/' text='Beranda' />
-                <NavbarLink to='/' text='Tentang Kami' />
-                <NavbarLink to='/' text='Kontak' />
+                <NavbarLink to='/about' text='Tentang Kami' />
+                <NavbarLink to='/contact' text='Kontak' />
             </LinkContainer>
             <LinkActionContainer>
                 {

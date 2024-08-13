@@ -1,3 +1,14 @@
+export type AdminMerchant = {
+    ID: number,
+    Email: string,
+    Username: string,
+    Name: string,
+    Phone: string,
+    Address: string,
+    Latitude: number,
+    Longitude: number
+}
+
 export type Merchant = {
     ID: number,
     UserID: number,
