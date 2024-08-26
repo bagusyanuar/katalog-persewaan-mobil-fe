@@ -147,6 +147,12 @@ const DriverSourcePage: React.FC = () => {
                     icon='bx bx-id-card'
                     active={false}
                 />
+                <SidebarItem
+                    to='/merchant/report'
+                    text='Laporan'
+                    icon='bx bx-receipt'
+                    active={false}
+                />
             </Sidebar>
             <ContentWrapper>
                 <NavbarMerchant />

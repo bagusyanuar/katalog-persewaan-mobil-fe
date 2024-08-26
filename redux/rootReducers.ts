@@ -13,6 +13,7 @@ import merchantProduct from './merchant/product/slice'
 import merchantDriver from './merchant/driver/slice'
 import merchantOrder from './merchant/order/slice'
 import merchantProfile from './merchant/profile/slice'
+import merchantReport from './merchant/report/slice'
 import adminLogin from './admin/login/slice'
 import adminMember from './admin/member/slice'
 import adminMerchant from './admin/merchant/slice'
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
     merchantDriver,
     merchantOrder,
     merchantProfile,
+    merchantReport,
     adminLogin,
     adminMember,
     adminMerchant

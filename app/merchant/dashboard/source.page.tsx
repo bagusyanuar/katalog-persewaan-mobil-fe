@@ -49,6 +49,12 @@ const MerchantDashboarSourcePage: React.FC = () => {
           icon='bx bx-id-card'
           active={pathName.startsWith('/merchant/profile')}
         />
+        <SidebarItem
+          to='/merchant/report'
+          text='Laporan'
+          icon='bx bx-receipt'
+          active={pathName.startsWith('/merchant/report')}
+        />
       </Sidebar>
       <ContentWrapper>
         <NavbarMerchant />

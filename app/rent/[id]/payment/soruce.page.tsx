@@ -302,6 +302,13 @@ const PaymentSourcePage: React.FC<IProps> = ({ isAuth, dataRent }) => {
                     </CardAction>
                 </ActionWrapper>
             </PaymentContainer>
+            <hr className='mt-5 mb-5'/>
+            <div className='w-100'>
+                <p className='text-slate-900 font-bold text-lg'>Cara Pembayaran</p>
+                <p className='text-slate-600'>1. Pilih Bank</p>
+                <p className='text-slate-600'>2. Transfer Ke Rekening BCA No. Rekening 8812985968 Atas Nama Bambang</p>
+                <p className='text-slate-600'>3. upload bukti pembayaran</p>
+            </div>
             <ToastContainer
                 hideProgressBar
             />

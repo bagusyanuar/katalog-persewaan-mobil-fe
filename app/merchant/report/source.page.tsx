@@ -13,24 +13,29 @@ import BreadcrumbWrapper from '@/components/breadcrumb/wrapper'
 import LoaderDots from '@/components/loader/loader.dots'
 import DataTable, { TableColumn } from 'react-data-table-component'
 import ModalConfirmation from '@/components/modal/modal.confirmation'
+import DatePicker from 'react-datepicker'
+import "react-datepicker/dist/react-datepicker.css";
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import {
-    MerchantOrderState,
+    MerchantReportState,
     SetLoadingOrder,
     SetID
-} from '@/redux/merchant/order/slice'
-import { getOrderList } from '@/redux/merchant/order/action'
+} from '@/redux/merchant/report/slice'
+import { getOrderList } from '@/redux/merchant/report/action'
 import { Order } from '@/model/order'
 import { showToast, ToastContent } from '@/components/toast'
 import { APIResponse } from '@/lib/util'
 import { ToastContainer } from 'react-toastify';
 
 const ProductSourcePage: React.FC = () => {
-    const StateMerchantOrder = useAppSelector(MerchantOrderState)
+    const StateMerchantReport = useAppSelector(MerchantReportState)
     const dispatch = useAppDispatch()
     const router = useRouter()
     const [modal, setModal] = useState<boolean>(false)
-    const [statusOrder, setStatusOrder] = useState<string>('1')
+    const [statusOrder, setStatusOrder] = useState<string>('4')
+    const [startDate, setStartDate] = useState<Date | null>(new Date())
+    const [endDate, setEndDate] = useState<Date | null>(new Date())
+
 
     const columns: TableColumn<Order>[] = [
         {
@@ -79,35 +84,28 @@ const ProductSourcePage: React.FC = () => {
         },
     ]
 
-    const onSubmit = () => {
-        // dispatch(deleteProduct({ id: StateMerchantProduct.ID.toString() })).then(response => {
-        //     const payload: APIResponse = response.payload as APIResponse
-        //     switch (payload.code) {
-        //         case 200:
-        //             showToast(<ToastContent theme='success' text={payload.message} />,
-        //                 {
-        //                     timeToClose: 1000,
-        //                     onClose: () => {
-        //                         setModal(false)
-        //                         dispatch(getProductList())
-        //                     }
-        //                 })
-        //             break;
-        //         default:
-        //             showToast(<ToastContent theme='error' text={payload.message} />,
-        //                 {
-        //                     timeToClose: 1000,
-        //                 })
-        //             break;
-        //     }
+    const handleChangeDate = (start: Date | null, end: Date | null) => {
 
-        //     console.log(payload);
-        // })
+        let startDateValue: string = new Date().toISOString().split('T')[0]
+        let endDateValue: string = new Date().toISOString().split('T')[0]
+        if (start !== null && end !== null) {
+            startDateValue = start.toISOString().split('T')[0]
+            endDateValue = end.toISOString().split('T')[0]
+        }
+        dispatch(getOrderList({ start: startDateValue, end: endDateValue }));
+        
+        console.log(startDateValue);
 
     }
 
     const initialPage = useCallback(async () => {
-        dispatch(getOrderList({ status: statusOrder }));
+        let startDateValue: string = new Date().toISOString().split('T')[0]
+        let endDateValue: string = new Date().toISOString().split('T')[0]
+        if (startDate !== null && endDate !== null) {
+            startDateValue = startDate.toISOString().split('T')[0]
+            endDateValue = endDate.toISOString().split('T')[0]
+        }
+        dispatch(getOrderList({ start: startDateValue, end: endDateValue }));
     }, [])
 
     useEffect(() => {
@@ -139,7 +137,7 @@ const ProductSourcePage: React.FC = () => {
                     to='/merchant/order'
                     text='Order'
                     icon='bx bx-shopping-bag'
-                    active={true}
+                    active={false}
                 />
                 <SidebarItem
                     to='/merchant/profile'
@@ -151,7 +149,7 @@ const ProductSourcePage: React.FC = () => {
                     to='/merchant/report'
                     text='Laporan'
                     icon='bx bx-receipt'
-                    active={false}
+                    active={true}
                 />
             </Sidebar>
             <ContentWrapper>
@@ -166,41 +164,26 @@ const ProductSourcePage: React.FC = () => {
                         </BreadcrumbWrapper>
                     </HeaderContainer>
                     <div className='flex gap-3 items-center mb-5'>
-                        <TabStatus
-                            className={statusOrder === '1' ? 'active' : ''}
-                            onClick={() => {
-                                setStatusOrder('1')
-                                dispatch(getOrderList({ status: '1' }));
+                        <DatePicker
+                            className='p-3 border-gray-500 border rounded-md w-full text-sm'
+                            selected={startDate}
+                            onChange={(date) => {
+                                setStartDate(date)
+                                handleChangeDate(date, endDate)
+                                // handleDateChange(date)
                             }}
-                        >
-                            Order Baru
-                        </TabStatus>
-                        <TabStatus
-                            className={statusOrder === '2' ? 'active' : ''}
-                            onClick={() => {
-                                setStatusOrder('2')
-                                dispatch(getOrderList({ status: '2' }));
-                            }}>
-                            Menunggu Datang
-                        </TabStatus>
-                        <TabStatus
-                            className={statusOrder === '3' ? 'active' : ''}
-                            onClick={() => { 
-                                setStatusOrder('3') 
-                                dispatch(getOrderList({ status: '3' }));
+                        // minDate={new Date()}
+                        />
+                        <DatePicker
+                            className='p-3 border-gray-500 border rounded-md w-full text-sm'
+                            selected={endDate}
+                            onChange={(date) => {
+                                setEndDate(date)
+                                handleChangeDate(startDate, date)
+                                // handleDateChange(date)
                             }}
-                        >
-                            Di Sewa
-                        </TabStatus>
-                        <TabStatus
-                            className={statusOrder === '4' ? 'active' : ''}
-                            onClick={() => { 
-                                setStatusOrder('4') 
-                                dispatch(getOrderList({ status: '4' }));
-                            }}
-                        >
-                            Selesai
-                        </TabStatus>
+                        // minDate={new Date()}
+                        />
                     </div>
                     <CardContent>
 
@@ -210,9 +193,9 @@ const ProductSourcePage: React.FC = () => {
                         <hr className='my-5' />
                         <DataTable
                             columns={columns}
-                            data={StateMerchantOrder.Orders}
+                            data={StateMerchantReport.Orders}
                             pagination
-                            progressPending={StateMerchantOrder.LoadingOrder}
+                            progressPending={StateMerchantReport.LoadingOrder}
                             progressComponent={<LoaderDots className='h-80' />}
                             persistTableHead={true}
                         />

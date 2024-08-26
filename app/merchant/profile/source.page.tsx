@@ -126,6 +126,12 @@ const MerchantProfileSourcePage: React.FC<IProps> = ({ profile }) => {
                     icon='bx bx-id-card'
                     active={true}
                 />
+                <SidebarItem
+                    to='/merchant/report'
+                    text='Laporan'
+                    icon='bx bx-receipt'
+                    active={false}
+                />
             </Sidebar>
             <ContentWrapper>
                 <NavbarMerchant />
